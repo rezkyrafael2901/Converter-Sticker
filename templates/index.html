@@ -1,52 +1,52 @@
-<!DOCTYPE html>
+<!-- templates/index.html -->
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Converter</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sticker Converter — Telegram ↔ WhatsApp</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
-
 <body>
-
-<div class="container">
-
-    <!-- Header -->
-    <header>
+  <div class="app">
+    <header class="top">
+      <div>
         <h1>Sticker Converter</h1>
-        <p>Convert Telegram ↔ WhatsApp Stickers Instantly</p>
-
-        <button id="themeToggle">🌙 Dark Mode</button>
+        <p class="subtitle">Convert Telegram ↔ WhatsApp stickers — fast & simple</p>
+      </div>
+      <div class="controls">
+        <button id="themeToggle">🌙</button>
+      </div>
     </header>
 
-    <!-- Mode Switch -->
-    <div class="mode-switch">
-        <button class="mode-btn active" data-mode="tg-to-wa">Telegram → WhatsApp</button>
-        <button class="mode-btn" data-mode="wa-to-tg">WhatsApp → Telegram</button>
-    </div>
+    <main class="card">
+      <div class="modes">
+        <button class="tab active" data-mode="tg-to-wa">Telegram → WhatsApp</button>
+        <button class="tab" data-mode="wa-to-tg">WhatsApp → Telegram</button>
+      </div>
 
-    <!-- Upload Box -->
-    <form id="uploadForm">
-        <div class="upload-box">
-            <p id="uploadText">Upload Telegram sticker (.webp)</p>
-            <input type="file" id="fileInput" name="file" accept=".webp" required>
-        </div>
+      <form id="uform" class="uform">
+        <label class="upload-box">
+          <input id="fileInput" type="file" accept=".webp" />
+          <div class="upload-text">
+            <strong id="uploadLabel">Drop or choose a .webp file</strong>
+            <span class="muted">static .webp only (no animated .tgs)</span>
+          </div>
+        </label>
 
-        <button type="submit" class="convert-btn">Convert Sticker</button>
-    </form>
+        <button id="convertBtn" class="primary">Convert</button>
+      </form>
 
-    <!-- Result Section -->
-    <div id="result" class="hidden">
-        <h2>Converted Sticker</h2>
-        <img id="outputImage" class="preview">
+      <section id="result" class="result hidden">
+        <h2>Converted</h2>
+        <img id="preview" class="preview" alt="converted sticker" />
+        <a id="download" class="btn">Download .webp</a>
+      </section>
 
-        <a id="downloadBtn" class="btn" download="converted.webp">Download</a>
+      <footer class="note">Built for Vercel serverless (Python). .tgs not supported on this free deployment.</footer>
+    </main>
+  </div>
 
-        <button id="addToWhatsApp" class="btn green hidden">Add to WhatsApp</button>
-    </div>
-
-</div>
-
-<script src="/static/script.js"></script>
+  <script src="/static/script.js"></script>
 </body>
 </html>

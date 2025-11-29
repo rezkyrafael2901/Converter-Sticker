@@ -1,116 +1,27 @@
-:root {
-    --bg: #ffffff;
-    --text: #222;
-    --primary: #4a75ff;
-    --card: #f5f5f5;
+/* static/style.css */
+:root{
+  --bg:#f6f8fb; --card:#fff; --text:#0f1724; --muted:#6b7280; --accent:#3b82f6; --radius:14px;
 }
-
-body.dark {
-    --bg: #0f0f10;
-    --text: #eaeaea;
-    --primary: #6b8cff;
-    --card: #1a1a1b;
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Segoe UI", sans-serif;
-    transition: 0.3s ease-in-out;
-}
-
-.container {
-    max-width: 480px;
-    margin: auto;
-    padding: 20px;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-#themeToggle {
-    margin-top: 10px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: none;
-    background: var(--primary);
-    color: white;
-    cursor: pointer;
-}
-
-.mode-switch {
-    display: flex;
-    margin-bottom: 20px;
-    gap: 10px;
-}
-
-.mode-btn {
-    flex: 1;
-    padding: 12px;
-    background: var(--card);
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.mode-btn.active {
-    background: var(--primary);
-    color: white;
-}
-
-.upload-box {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.convert-btn {
-    width: 100%;
-    padding: 12px;
-    background: var(--primary);
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
-#result {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.preview {
-    width: 200px;
-    margin-bottom: 20px;
-}
-
-.btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    text-align: center;
-    background: #444;
-    color: white;
-    border-radius: 8px;
-    margin-top: 10px;
-    text-decoration: none;
-}
-
-.btn.green {
-    background: #2ecc71;
-}
-
-.hidden {
-    display: none;
-}
+body.dark{ --bg:#0b1020; --card:#0f1724; --text:#e6eef8; --muted:#94a3b8; --accent:#60a5fa; }
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+.app{width:100%;max-width:860px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.top h1{margin:0;font-size:20px}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+.modes{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer}
+.tab.active{background:var(--accent);color:white;border:0}
+.uform{display:grid;gap:12px}
+.upload-box{display:flex;align-items:center;gap:12px;border:2px dashed rgba(15,23,36,0.06);padding:18px;border-radius:10px;cursor:pointer}
+.upload-box input{display:none}
+.upload-text{display:flex;flex-direction:column}
+.muted{color:var(--muted);font-size:12px}
+.primary{background:var(--accent);color:white;padding:12px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+.result{margin-top:16px;text-align:center}
+.preview{width:160px;height:160px;object-fit:contain;background:linear-gradient(180deg,#fff,#f3f6ff);border-radius:16px;padding:12px}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111827;color:white;text-decoration:none;margin-top:10px}
+.hidden{display:none}
+.note{margin-top:12px;color:var(--muted);font-size:13px;text-align:center}
+#themeToggle{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:8px;cursor:pointer}

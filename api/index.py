@@ -1,60 +1,62 @@
+# api/index.py
 import base64
 import io
+import json
 from PIL import Image
+
+def make_webp(image: Image.Image) -> bytes:
+    out = io.BytesIO()
+    # Use 512x512 already handled by caller
+    image.save(out, format="WEBP", lossless=True)
+    return out.getvalue()
 
 def handler(event, context):
     try:
-        # Cek request method
-        if event.get("httpMethod") != "POST":
-            return {
-                "statusCode": 405,
-                "body": "Method Not Allowed"
-            }
+        # Only allow POST
+        method = event.get("httpMethod") or event.get("method")
+        if method and method.upper() != "POST":
+            return {"statusCode": 405, "body": "Method Not Allowed"}
 
-        # Mendapatkan header
-        mode = event.get("headers", {}).get("x-mode", "tg-to-wa")
+        headers = event.get("headers") or {}
+        mode = headers.get("x-mode", headers.get("X-Mode", "tg-to-wa"))
 
-        # Input file base64
         body = event.get("body", "")
-        is_base64 = event.get("isBase64Encoded", False)
+        is_b64 = event.get("isBase64Encoded", True)
 
-        if not is_base64:
-            return {
-                "statusCode": 400,
-                "body": "File must be Base64 encoded"
-            }
+        if not body:
+            return {"statusCode": 400, "body": "No file body received."}
 
-        # Decode file input
-        file_bytes = base64.b64decode(body)
-        img = Image.open(io.BytesIO(file_bytes)).convert("RGBA")
+        if not is_b64:
+            # sometimes body may not be base64; try to handle but prefer base64
+            return {"statusCode": 400, "body": "Please send the image as base64-encoded body."}
 
-        # Resize untuk WA (512x512)
-        if mode == "tg-to-wa":
-            img = img.resize((512, 512))
+        # decode input image bytes
+        try:
+            file_bytes = base64.b64decode(body)
+        except Exception as e:
+            return {"statusCode": 400, "body": f"Invalid base64 body: {str(e)}"}
 
-        # Resize untuk TG (512x512 juga)
-        elif mode == "wa-to-tg":
-            img = img.resize((512, 512))
+        # open image
+        try:
+            img = Image.open(io.BytesIO(file_bytes)).convert("RGBA")
+        except Exception as e:
+            return {"statusCode": 400, "body": f"Cannot open image: {str(e)}"}
 
-        # Convert ke WEBP
-        output = io.BytesIO()
-        img.save(output, format="WEBP", lossless=True)
-        output.seek(0)
+        # Standardize to 512x512 for both directions
+        img = img.resize((512, 512), Image.Resampling.LANCZOS)
 
-        # Encode hasil lagi sebagai Base64
-        encoded_result = base64.b64encode(output.getvalue()).decode()
+        # Additional per-mode logic can be added here in future
+        result_bytes = make_webp(img)
+
+        # Return base64-encoded webp
+        encoded = base64.b64encode(result_bytes).decode()
 
         return {
             "statusCode": 200,
-            "headers": {
-                "Content-Type": "image/webp"
-            },
+            "headers": {"Content-Type": "image/webp"},
             "isBase64Encoded": True,
-            "body": encoded_result
+            "body": encoded
         }
 
-    except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": f"Error: {str(e)}"
-        }
+    except Exception as exc:
+        return {"statusCode": 500, "body": "Server Error: " + str(exc)}
