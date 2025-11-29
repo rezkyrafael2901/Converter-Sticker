@@ -1,0 +1,15 @@
+.btn-green {
+    background: #25D366;
+}
+
+.btn-green:hover {
+    background: #1ebe57;
+}
+
+.btn-secondary {
+    background: #888;
+}
+
+.btn-secondary:hover {
+    background: #666;
+}
