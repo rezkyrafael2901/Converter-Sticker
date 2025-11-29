@@ -1,29 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Sticker Berhasil Dibuat</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="utf-8">
+  <title>Berhasil - Sticker Pack</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <div class="container">
+    <h1>Sticker Pack Siap 🎉</h1>
+    <p>Download pack WhatsApp (ZIP) di bawah ini.</p>
 
-<div class="container">
-    <h1>Sticker Berhasil Dibuat! 🎉</h1>
+    <a class="btn" href="/download/{{ zip_name }}">Download StickerPack (ZIP)</a>
 
-    <p>Klik tombol di bawah untuk menambahkan sticker ke WhatsApp.</p>
+    <p style="margin-top:16px;">
+      Tombol "Add to WhatsApp" langsung hanya bekerja pada device yang mendukung URI intent WhatsApp. Jika tidak berfungsi, unduh ZIP & impor manual.
+    </p>
 
-    <a href="/download/{{ zip_file }}" class="btn">Download StickerPack</a>
-
-    <br><br>
-
-    <a href="whatsapp://stickerPack/tg_to_wa_pack" class="btn btn-green">
-        Add to WhatsApp
-    </a>
-
-    <br><br>
-
-    <a href="/" class="btn btn-secondary">Convert Lagi</a>
-</div>
-
+    <a class="btn btn-secondary" href="/">Convert Lagi</a>
+  </div>
 </body>
 </html>

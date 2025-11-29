@@ -2,13 +2,13 @@
   "version": 2,
   "builds": [
     { "src": "api/index.py", "use": "@vercel/python" },
-    { "src": "templates/*.html", "use": "@vercel/static" },
-    { "src": "static/*", "use": "@vercel/static" }
+    { "src": "static/**", "use": "@vercel/static" },
+    { "src": "templates/*.html", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/", "dest": "/templates/index.html" },
-    { "src": "/success", "dest": "/templates/success.html" },
-    { "src": "/static/(.*)", "dest": "/static/$1" },
-    { "src": "/api/(.*)", "dest": "/api/index.py" }
+    { "src": "/", "dest": "/api/index.py" },
+    { "src": "/convert", "dest": "/api/index.py" },
+    { "src": "/download/(.*)", "dest": "/api/index.py" },
+    { "src": "/static/(.*)", "dest": "/static/$1" }
   ]
 }
