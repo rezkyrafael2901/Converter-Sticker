@@ -1,62 +1,108 @@
-# api/index.py
-import base64
+import os
 import io
 import json
+import shutil
+from zipfile import ZipFile
+from flask import Flask, render_template, request, send_file, redirect, url_for, flash
+from werkzeug.utils import secure_filename
 from PIL import Image
 
-def make_webp(image: Image.Image) -> bytes:
-    out = io.BytesIO()
-    # Use 512x512 already handled by caller
-    image.save(out, format="WEBP", lossless=True)
-    return out.getvalue()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # /api
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
-def handler(event, context):
-    try:
-        # Only allow POST
-        method = event.get("httpMethod") or event.get("method")
-        if method and method.upper() != "POST":
-            return {"statusCode": 405, "body": "Method Not Allowed"}
+TEMPLATE_DIR = os.path.join(ROOT_DIR, "templates")
+STATIC_DIR = os.path.join(ROOT_DIR, "static")
 
-        headers = event.get("headers") or {}
-        mode = headers.get("x-mode", headers.get("X-Mode", "tg-to-wa"))
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+app.secret_key = "secret-key"
 
-        body = event.get("body", "")
-        is_b64 = event.get("isBase64Encoded", True)
+TMP = "/tmp"
+UPLOAD_DIR = os.path.join(TMP, "uploads")
+OUT_DIR = os.path.join(TMP, "outputs")
+PACK_DIR = os.path.join(TMP, "pack")
 
-        if not body:
-            return {"statusCode": 400, "body": "No file body received."}
+for d in (UPLOAD_DIR, OUT_DIR, PACK_DIR):
+    os.makedirs(d, exist_ok=True)
 
-        if not is_b64:
-            # sometimes body may not be base64; try to handle but prefer base64
-            return {"statusCode": 400, "body": "Please send the image as base64-encoded body."}
+ALLOWED_EXT = {".webp"}
 
-        # decode input image bytes
-        try:
-            file_bytes = base64.b64decode(body)
-        except Exception as e:
-            return {"statusCode": 400, "body": f"Invalid base64 body: {str(e)}"}
+def allowed(filename):
+    _, ext = os.path.splitext(filename.lower())
+    return ext in ALLOWED_EXT
 
-        # open image
-        try:
-            img = Image.open(io.BytesIO(file_bytes)).convert("RGBA")
-        except Exception as e:
-            return {"statusCode": 400, "body": f"Cannot open image: {str(e)}"}
+def resize_to_whatsapp(in_path, out_path):
+    img = Image.open(in_path).convert("RGBA")
+    img = img.resize((512, 512), Image.Resampling.LANCZOS)
+    img.save(out_path, "WEBP")
 
-        # Standardize to 512x512 for both directions
-        img = img.resize((512, 512), Image.Resampling.LANCZOS)
+def make_pack(sticker_path, out_zip_path):
+    if os.path.exists(PACK_DIR):
+        shutil.rmtree(PACK_DIR)
+    os.makedirs(PACK_DIR, exist_ok=True)
 
-        # Additional per-mode logic can be added here in future
-        result_bytes = make_webp(img)
+    # Copy sticker
+    dst_path = os.path.join(PACK_DIR, "sticker.webp")
+    shutil.copy(sticker_path, dst_path)
 
-        # Return base64-encoded webp
-        encoded = base64.b64encode(result_bytes).decode()
+    metadata = {
+        "identifier": "tg_to_wa_pack",
+        "name": "Converted Sticker",
+        "publisher": "Converter",
+        "stickers": [
+            {"image_file": "sticker.webp", "emojis": ["😀"]}
+        ]
+    }
 
-        return {
-            "statusCode": 200,
-            "headers": {"Content-Type": "image/webp"},
-            "isBase64Encoded": True,
-            "body": encoded
-        }
+    with open(os.path.join(PACK_DIR, "metadata.json"), "w") as f:
+        json.dump(metadata, f, indent=2)
 
-    except Exception as exc:
-        return {"statusCode": 500, "body": "Server Error: " + str(exc)}
+    with ZipFile(out_zip_path, "w") as z:
+        z.write(dst_path, "sticker.webp")
+        z.write(os.path.join(PACK_DIR, "metadata.json"), "metadata.json")
+
+@app.route("/", methods=["GET"])
+def homepage():
+    return render_template("index.html")
+
+@app.route("/convert", methods=["POST"])
+def convert():
+    if "sticker" not in request.files:
+        flash("File tidak ditemukan")
+        return redirect(url_for("homepage"))
+
+    f = request.files["sticker"]
+    if f.filename == "":
+        flash("Harap pilih file")
+        return redirect(url_for("homepage"))
+
+    filename = secure_filename(f.filename)
+    ext = os.path.splitext(filename)[1].lower()
+
+    if ext == ".tgs":
+        flash("Maaf, file .tgs tidak didukung pada Vercel.")
+        return redirect(url_for("homepage"))
+
+    if ext not in ALLOWED_EXT:
+        flash("Hanya .webp yang didukung.")
+        return redirect(url_for("homepage"))
+
+    in_path = os.path.join(UPLOAD_DIR, filename)
+    f.save(in_path)
+
+    out_sticker = os.path.join(OUT_DIR, "converted.webp")
+    resize_to_whatsapp(in_path, out_sticker)
+
+    out_zip = os.path.join(OUT_DIR, "whatsapp_pack.zip")
+    make_pack(out_sticker, out_zip)
+
+    return render_template("success.html", zip_name="whatsapp_pack.zip")
+
+@app.route("/download/<fname>")
+def download(fname):
+    path = os.path.join(OUT_DIR, fname)
+    if not os.path.exists(path):
+        return "Not Found", 404
+    return send_file(path, as_attachment=True)
+
+if __name__ == "__main__":
+    app.run()

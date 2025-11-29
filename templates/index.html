@@ -1,50 +1,36 @@
-<!-- templates/index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sticker Converter — Telegram ↔ WhatsApp</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <meta charset="utf-8">
+  <title>Telegram → WhatsApp Sticker Converter</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="app">
-    <header class="top">
-      <div>
-        <h1>Sticker Converter</h1>
-        <p class="subtitle">Convert Telegram ↔ WhatsApp stickers — fast & simple</p>
+  <div class="container">
+    <h1>Telegram → WhatsApp Sticker Converter</h1>
+    <p>Upload file sticker Telegram <strong>.webp</strong> (statis). Animasi <strong>.tgs</strong> tidak didukung pada deploy ini.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for msg in messages %}
+            <div>{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/convert" method="post" enctype="multipart/form-data" id="uploadForm">
+      <div class="upload-box">
+        <input type="file" name="sticker" accept=".webp" required>
       </div>
-      <div class="controls">
-        <button id="themeToggle">🌙</button>
-      </div>
-    </header>
+      <button type="submit" class="btn">Convert & Create Pack</button>
+    </form>
 
-    <main class="card">
-      <div class="modes">
-        <button class="tab active" data-mode="tg-to-wa">Telegram → WhatsApp</button>
-        <button class="tab" data-mode="wa-to-tg">WhatsApp → Telegram</button>
-      </div>
-
-      <form id="uform" class="uform">
-        <label class="upload-box">
-          <input id="fileInput" type="file" accept=".webp" />
-          <div class="upload-text">
-            <strong id="uploadLabel">Drop or choose a .webp file</strong>
-            <span class="muted">static .webp only (no animated .tgs)</span>
-          </div>
-        </label>
-
-        <button id="convertBtn" class="primary">Convert</button>
-      </form>
-
-      <section id="result" class="result hidden">
-        <h2>Converted</h2>
-        <img id="preview" class="preview" alt="converted sticker" />
-        <a id="download" class="btn">Download .webp</a>
-      </section>
-
-      <footer class="note">Built for Vercel serverless (Python). .tgs not supported on this free deployment.</footer>
-    </main>
+    <small style="display:block;margin-top:12px;color:#666;">
+      Setelah convert: unduh ZIP → gunakan aplikasi WhatsApp yang mendukung import sticker packs.
+    </small>
   </div>
 
   <script src="/static/script.js"></script>
