@@ -1,38 +1,52 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Telegram → WhatsApp Sticker Converter</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticker Converter</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
-  <div class="container">
-    <h1>Telegram → WhatsApp Sticker Converter</h1>
-    <p>Upload file sticker Telegram <strong>.webp</strong> (statis). Animasi <strong>.tgs</strong> tidak didukung pada deploy ini.</p>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">
-          {% for msg in messages %}
-            <div>{{ msg }}</div>
-          {% endfor %}
+<div class="container">
+
+    <!-- Header -->
+    <header>
+        <h1>Sticker Converter</h1>
+        <p>Convert Telegram ↔ WhatsApp Stickers Instantly</p>
+
+        <button id="themeToggle">🌙 Dark Mode</button>
+    </header>
+
+    <!-- Mode Switch -->
+    <div class="mode-switch">
+        <button class="mode-btn active" data-mode="tg-to-wa">Telegram → WhatsApp</button>
+        <button class="mode-btn" data-mode="wa-to-tg">WhatsApp → Telegram</button>
+    </div>
+
+    <!-- Upload Box -->
+    <form id="uploadForm">
+        <div class="upload-box">
+            <p id="uploadText">Upload Telegram sticker (.webp)</p>
+            <input type="file" id="fileInput" name="file" accept=".webp" required>
         </div>
-      {% endif %}
-    {% endwith %}
 
-    <form action="/convert" method="post" enctype="multipart/form-data" id="uploadForm">
-      <div class="upload-box">
-        <input type="file" name="sticker" accept=".webp" required>
-      </div>
-      <button type="submit" class="btn">Convert & Create Pack</button>
+        <button type="submit" class="convert-btn">Convert Sticker</button>
     </form>
 
-    <small style="display:block;margin-top:12px;color:#666;">
-      Setelah convert: unduh ZIP → gunakan aplikasi WhatsApp yang mendukung import sticker packs.
-    </small>
-  </div>
+    <!-- Result Section -->
+    <div id="result" class="hidden">
+        <h2>Converted Sticker</h2>
+        <img id="outputImage" class="preview">
 
-  <script src="/static/script.js"></script>
+        <a id="downloadBtn" class="btn" download="converted.webp">Download</a>
+
+        <button id="addToWhatsApp" class="btn green hidden">Add to WhatsApp</button>
+    </div>
+
+</div>
+
+<script src="/static/script.js"></script>
 </body>
 </html>
