@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "templates/*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "templates/index.html"
+    },
+    {
+      "src": "/api/t2w",
+      "dest": "/api/t2w.py"
+    },
+    {
+      "src": "/api/w2t",
+      "dest": "/api/w2t.py"
+    },
+    {
+      "src": "/api/convert_zip",
+      "dest": "/api/convert_zip.py"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    }
+  ]
+}

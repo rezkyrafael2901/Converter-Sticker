@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sticker Converter — Gurki</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="/static/favicon.png">
+</head>
+<body>
+  <div class="bg-layer light" id="bgLight"></div>
+  <div class="bg-layer dark" id="bgDark"></div>
+
+  <header class="topbar">
+    <div class="logo">🌌 <strong>Gurki</strong> Sticker</div>
+    <div class="controls">
+      <label class="theme-toggle"><input id="themeSwitch" type="checkbox"><span>🌙/☀️</span></label>
+    </div>
+  </header>
+
+  <main class="card glass">
+    <h1 id="siteTitle">Sticker Converter</h1>
+    <p class="lead">Convert Telegram ⇄ WhatsApp — fast & simple. Animated .tgs not supported in this build.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="t2w">Telegram → WhatsApp</button>
+      <button class="tab" data-tab="w2t">WhatsApp → Telegram</button>
+      <button class="tab" data-tab="zip">Batch (ZIP)</button>
+    </div>
+
+    <section id="t2w" class="tabpanel active">
+      <form id="formT2W" class="form">
+        <label class="field">Telegram sticker (.webp)</label>
+        <input class="inputfile" id="inputT2W" type="file" name="file" accept="image/webp" required />
+        <div class="action-row">
+          <button class="main-btn" id="btnT2W" type="submit">Convert to WhatsApp</button>
+        </div>
+        <div class="download-row">
+          <a id="dlT2W" class="download hidden" href="#" download>Download converted sticker</a>
+        </div>
+        <div class="loader-row"><div class="loader" id="loaderT2W" aria-hidden="true"></div></div>
+      </form>
+    </section>
+
+    <section id="w2t" class="tabpanel">
+      <form id="formW2T" class="form">
+        <label class="field">WhatsApp sticker (.webp)</label>
+        <input class="inputfile" id="inputW2T" type="file" name="file" accept="image/webp" required />
+        <div class="action-row">
+          <button class="main-btn" id="btnW2T" type="submit">Convert to Telegram</button>
+        </div>
+        <div class="download-row">
+          <a id="dlW2T" class="download hidden" href="#" download>Download converted sticker</a>
+        </div>
+        <div class="loader-row"><div class="loader" id="loaderW2T" aria-hidden="true"></div></div>
+      </form>
+    </section>
+
+    <section id="zip" class="tabpanel">
+      <form id="formZIP" class="form">
+        <label class="field">Upload ZIP (Telegram stickers .webp)</label>
+        <input class="inputfile" id="inputZIP" type="file" name="zipfile" accept=".zip" required />
+        <div class="action-row">
+          <button class="main-btn" id="btnZIP" type="submit">Convert ZIP to WhatsApp Pack</button>
+        </div>
+        <div class="download-row">
+          <a id="dlZIP" class="download hidden" href="#" download>Download WhatsApp Pack (ZIP)</a>
+        </div>
+        <div class="loader-row"><div class="loader" id="loaderZIP" aria-hidden="true"></div></div>
+      </form>
+    </section>
+
+    <p class="note">Tip: For best results use square 512×512 .webp files. ZIP should contain only .webp sticker files.</p>
+    <div class="footer">© Gurki — 2025</div>
+  </main>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
