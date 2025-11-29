@@ -1,49 +1,51 @@
-let currentMode = "tg-to-wa"; // default mode
-
-// Toggle Mode (Telegram → WhatsApp or WhatsApp → Telegram)
-document.querySelectorAll(".mode-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentMode = btn.dataset.mode;
-
-        const text = currentMode === "tg-to-wa"
-            ? "Upload Telegram sticker (.webp)"
-            : "Upload WhatsApp sticker (.webp)";
-
-        document.getElementById("uploadText").innerText = text;
-    });
-});
-
-// Theme toggle
-document.getElementById("themeToggle").addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-});
-
-// Form submit
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const fileInput = document.getElementById("fileInput");
-    if (!fileInput.files.length) return;
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-    formData.append("mode", currentMode);
+    const base64 = await fileToBase64(file);
 
     const res = await fetch("/api/index.py", {
         method: "POST",
-        body: formData
+        headers: {
+            "Content-Type": "application/octet-stream",
+            "x-mode": currentMode
+        },
+        body: base64.split(",")[1]  // remove data header
     });
 
-    const blob = await res.blob();
+    const data = await res.text();
+
+    const blob = b64toBlob(data, "image/webp");
     const url = URL.createObjectURL(blob);
 
-    // Show result
     document.getElementById("result").classList.remove("hidden");
     document.getElementById("outputImage").src = url;
     document.getElementById("downloadBtn").href = url;
-
-    // Only show Add to WhatsApp button for Telegram → WA
-    document.getElementById("addToWhatsApp").classList.toggle("hidden", currentMode !== "tg-to-wa");
 });
+
+function fileToBase64(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+    });
+}
+
+function b64toBlob(b64Data, contentType) {
+    const byteCharacters = atob(b64Data);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+        byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    return new Blob(byteArrays, { type: contentType });
+}
